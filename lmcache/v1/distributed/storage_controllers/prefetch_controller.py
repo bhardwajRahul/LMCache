@@ -13,7 +13,7 @@ The controller runs a background thread with an event-driven loop that:
 """
 
 # Standard
-from collections import defaultdict
+from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 from typing import Iterable
 import enum
@@ -594,6 +594,7 @@ class PrefetchController(StorageControllerInterface):
                     "request_id": request_id,
                     "key_count": len(keys),
                     "adapter_count": len(pending_lookup_tasks),
+                    "key_count_per_salt": Counter(k.cache_salt for k in keys),
                 },
             )
         )
@@ -767,6 +768,9 @@ class PrefetchController(StorageControllerInterface):
                     "request_id": request.request_id,
                     "key_count": len(reserved_key_set),
                     "adapter_count": len(trimmed_plan),
+                    "key_count_per_salt": Counter(
+                        k.cache_salt for k in reserved_key_set
+                    ),
                 },
             )
         )
@@ -905,6 +909,7 @@ class PrefetchController(StorageControllerInterface):
                     "request_id": request.request_id,
                     "loaded_count": len(loaded_keys),
                     "failed_count": len(failed_keys),
+                    "key_count_per_salt": Counter(k.cache_salt for k in loaded_keys),
                 },
             )
         )
