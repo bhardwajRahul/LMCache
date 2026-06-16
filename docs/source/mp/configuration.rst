@@ -61,16 +61,18 @@ Source: ``lmcache/v1/multiprocess/config.py``
        (composes a ``BlendV3Module`` into the engine);
        ``blend_legacy`` selects the original CacheBlend
        (composes a ``BlendModule``). Both blend variants require
-       ``--supported-transfer-mode`` to be ``gpu`` or ``auto``.
+       ``--supported-transfer-mode`` to be ``lmcache_driven`` or ``auto``.
        Choices: ``default``, ``blend``, ``blend_legacy``.
    * - ``--supported-transfer-mode``
      - ``auto``
      - Which worker → server transfer paths the server loads.
-       ``gpu`` enables only GPU-based IPC transfer (STORE/RETRIEVE);
-       ``non_gpu`` enables only the non-GPU (PREPARE/COMMIT) transfer
-       path; ``auto`` (default) loads both so workers of either device
-       type can connect without manual configuration.
-       Choices: ``gpu``, ``non_gpu``, ``auto``.
+       ``lmcache_driven`` enables only the server-driven transfer
+       path (STORE/RETRIEVE, supports both CUDA IPC and CPU SHM);
+       ``engine_driven`` enables only the non-GPU (PREPARE/COMMIT)
+       transfer path; ``auto`` (default) loads both
+       so workers of either device type can connect without manual
+       configuration.
+       Choices: ``lmcache_driven``, ``engine_driven``, ``auto``.
    * - ``--runtime-plugin-locations``
      - ``[]``
      - Zero or more paths to runtime plugin scripts or directories to
@@ -91,7 +93,7 @@ Source: ``lmcache/v1/multiprocess/config.py``
      - *(not set)*
      - SHM segment name for non-GPU KV transfer (only used when the
        non-GPU path is loaded, i.e. ``--supported-transfer-mode`` is
-       ``auto`` or ``non_gpu``).
+       ``auto`` or ``engine_driven``).
        Not set (default): auto-allocate a shared-memory pool.
        ``""`` (empty string): disable SHM and force the pickle transfer
        path.  Any other value: use that exact name for the SHM pool
